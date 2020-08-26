@@ -1,0 +1,82 @@
+---
+title: "Pitch - nLargestCities"
+author: "Mathieu MICHEL"
+date: "26/08/2020"
+output: 
+   ioslides_presentation: 
+   widescreen: true
+   incremental: true
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(xlsx)
+library(tidyverse)
+library(knitr)
+```
+
+## The idea
+
+- Have you ever been curious about the most populous cities in the world?
+
+> - **who are they?**
+
+> - <div class="red">**where even are they?**</div> 
+
+
+## Now there is a free way to find out!!
+
+nLargestCities allows you to scroll through the number of largest cities of your choice (but limited to the top 50).
+
+The app reactivly showcases the cities' population in a bar plot, 
+and provide a summary statistics per continent.
+
+With trusted content from Wikipedia: https://en.wikipedia.org/wiki/List_of_largest_cities
+
+## Teasing with n=5
+
+```{r plot, fig.height=1.5, echo = FALSE}
+
+data <- read.xlsx("Largest Cities.xlsx", sheetIndex = 1)
+
+data$city <- factor(data$city, levels = data$city)
+
+ggplot(data=data[1:5,], aes(x=city, y=population, fill=continent)) +
+       geom_bar(stat="identity") + coord_flip() 
+
+###
+
+table <- aggregate(data[1:5,]$city, 
+                           by=list(data[1:5,]$continent),
+                           FUN='length')
+        
+        table2 <- aggregate(data[1:5,]$pop, 
+                            by=list(data[1:5,]$continent),
+                            FUN='mean')
+        table2$x <- round(table2$x/1000000,3)
+        
+        table3 <- cbind(table,table2$x)
+        
+        names(table3) <- c("Continent",
+                           "Number of cities in the Top-5",
+                           "Average population in biggest cities (millions)")
+        
+        kable(table3)
+
+```
+
+
+# Thank you for reading!
+
+Eager to learn more about cities 6 to 50?
+
+Go to:
+
+
+[**nLargestCities**](https://mathieu-michel.shinyapps.io/DevDataProd_Project/)
+
+
+
+And let's make the world a better place by knowing more about big cities!
+
